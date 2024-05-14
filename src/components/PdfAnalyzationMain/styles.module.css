@@ -1,0 +1,60 @@
+.container {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  overflow: hidden;
+  padding: 5% 100px;
+}
+
+.uploadSectionContainer {
+  width: 100%;
+  min-height: 100%;
+  flex: 1;
+  border: 2px dashed var(--gray-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 8px;
+  padding: 0 20px;
+  overflow: hidden;
+  transition: all 0.2s;
+  transform: scale(1);
+}
+
+.uploadSectionContainerOvered {
+  box-shadow: 0px 0px 24px -3px rgba(var(--white), 0.5);
+  transform: scale(1.02);
+  background-color: var(--gray-300);
+}
+
+.uploadSectionTitle {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.uploadSectionTitleLabel {
+  margin-top: 10px;
+  color: var(--brand-purple);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 14px;
+}
+
+.inputContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  .input {
+    width: 100%;
+    max-width: 600px;
+    font-size: 18px;
+  }
+}
+
+.sendButton {
+  margin-right: -5px;
+}

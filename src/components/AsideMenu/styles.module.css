@@ -1,0 +1,109 @@
+.container {
+  min-height: 100%;
+  width: 250px;
+  gap: 30px;
+}
+
+.createNewButton {
+  justify-content: space-between;
+}
+
+.previousSectionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.previousSectionTitle {
+  font-size: 12px;
+  color: var(--gray-500);
+  padding-left: 8px;
+}
+
+.previousSectionListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  list-style: none;
+}
+
+.previousSectionListItem {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 32px;
+  padding: 0 0 0 0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--button-text-primary-text);
+  transition: all 0.2s;
+  gap: 5px;
+
+  .previousSectionListItemButton {
+    padding: 0 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-transform: initial;
+    width: 100%;
+    height: 100%;
+    &.activeLink {
+      color: var(--button-contained-secondary-text);
+      font-weight: 500;
+      background-color: rgb(110, 177, 219, 0.3);
+    }
+    &:active,
+    &:focus-visible {
+      background-color: rgba(var(--button-contained-primary-rgb), 0.1);
+      & + .editButton {
+        transition: all 0.2s;
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+
+  .editButton {
+    font-size: 12px;
+    border-radius: 8px;
+    height: 32px;
+    width: 32px;
+    opacity: 0;
+    visibility: hidden;
+    &:focus-visible {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &:hover,
+  &:focus-visible {
+    .previousSectionListItemButton:not(.activeLink) {
+      background-color: rgba(var(--button-contained-primary-rgb), 0.05);
+    }
+    .editButton {
+      transition: all 0.2s;
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+.editFormField {
+  width: 100%;
+  margin-left: -1px;
+}
+
+.bottomSectionContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.settingButton {
+  justify-content: space-between;
+}
