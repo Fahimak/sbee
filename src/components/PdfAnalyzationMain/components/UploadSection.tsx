@@ -1,17 +1,22 @@
 "use client";
-import React, { ChangeEvent, useState, useRef } from "react";
+import React, { ChangeEvent, useRef, FC } from "react";
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import classNames from "classnames";
 
 import styles from "../styles.module.css";
+import { useRoomActionsContext } from "@app/hooks/roomContextHooks";
 
-type FileWithId = File & { id: string };
 type FilesCollection = File[];
 
 interface DragCollectData {
   isOver: boolean;
 }
+
+type Props = {
+  roomUUID: string | undefined;
+  hasDocs: boolean;
+};
 
 const PDFType = "application/pdf";
 const availableFileTypes = [PDFType];
@@ -19,23 +24,27 @@ const availableFileTypes = [PDFType];
 const filterFilesToType = (
   files: FilesCollection,
   type: string
-): FileWithId[] => {
-  return files
-    .filter((file) => file.type === type)
-    .map((i) => {
-      Reflect.set(i, "id", crypto.randomUUID());
-      return i as FileWithId;
-    });
+): FilesCollection => {
+  return files.filter((file) => file.type === type);
 };
 
-const UploadSection = () => {
+const UploadSection: FC<Props> = ({ roomUUID, hasDocs }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [uploadedFiles, setFiles] = useState<FileWithId[]>([]);
+  const { addRoomDocument } = useRoomActionsContext();
 
-  const addFiles = (files: FilesCollection) => {
+  const addFiles = async (files: FilesCollection) => {
     const filteredFiles = filterFilesToType(files, PDFType);
-    setFiles((prev) => [...prev, ...filteredFiles]);
+
+    const formData = new FormData();
+
+    filteredFiles.forEach((file) => {
+      formData.append("file", file);
+    });
+
+    if (roomUUID) {
+      addRoomDocument.mutate({ roomUUID, body: formData });
+    }
   };
 
   const [{ isOver }, dropRef] = useDrop<
@@ -48,14 +57,13 @@ const UploadSection = () => {
       drop: ({ files }) => {
         addFiles(Array.from(files));
       },
-
       collect: (monitor: DropTargetMonitor) => {
         return {
           isOver: monitor.isOver(),
         };
       },
     }),
-    []
+    [addFiles]
   );
 
   const handleChangeUploadFilesInput = (
@@ -70,21 +78,23 @@ const UploadSection = () => {
     event.currentTarget.value = "";
   };
 
-  const handleClickDeleteFile = (id: string) => () => {
-    setFiles((files) => files?.filter((f) => f.id !== id));
-  };
-
   const handleClickSelectFile = (e: React.MouseEvent) => {
-    // e.preventDefault();
     fileInputRef.current?.click();
   };
 
+  const classNamesContainer = classNames(styles.uploadSectionContainer, {
+    [styles.uploadSectionContainerOvered]: isOver,
+    // [styles.withDocs]: hasDocs,
+  });
+
+  const classNamesSectionOverlap = classNames(styles.uploadSectionOverWrap, {
+    [styles.withDocs]: hasDocs,
+  });
+
   return (
-    <>
+    <div className={classNamesSectionOverlap}>
       <div
-        className={classNames(styles.uploadSectionContainer, {
-          [styles.uploadSectionContainerOvered]: isOver,
-        })}
+        className={classNamesContainer}
         ref={dropRef as unknown as React.Ref<HTMLDivElement>}
       >
         <p className={styles.uploadSectionTitle}>
@@ -107,22 +117,7 @@ const UploadSection = () => {
           </button>
         </label>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "16px",
-        }}
-      >
-        {uploadedFiles?.map((file) => {
-          return (
-            <button key={file.id} onClick={handleClickDeleteFile(file.id)}>
-              {file.name}
-            </button>
-          );
-        })}
-      </div>
-    </>
+    </div>
   );
 };
 

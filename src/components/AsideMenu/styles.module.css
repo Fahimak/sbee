@@ -1,7 +1,12 @@
 .container {
-  min-height: 100%;
+  height: calc(100dvh - 20px);
+  /* ??? */
   width: 250px;
   gap: 30px;
+  overflow: hidden;
+  display: flex;
+  /* position: sticky; */
+  /* top: 0px; */
 }
 
 .createNewButton {
@@ -13,6 +18,7 @@
   flex-direction: column;
   gap: 16px;
   flex: 1;
+  overflow: auto;
 }
 
 .previousSectionTitle {
@@ -22,10 +28,13 @@
 }
 
 .previousSectionListContainer {
+  /* flex: 1; */
   display: flex;
   flex-direction: column;
   gap: 5px;
   list-style: none;
+  overflow: auto;
+  padding: 2px 0;
 }
 
 .previousSectionListItem {
@@ -33,7 +42,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 32px;
+  /* height: 32px; */
   padding: 0 0 0 0;
   border-radius: 8px;
   font-size: 14px;
@@ -43,6 +52,7 @@
   gap: 5px;
 
   .previousSectionListItemButton {
+    margin-left: 2px;
     padding: 0 8px;
     border-radius: 8px;
     display: flex;
@@ -94,8 +104,8 @@
 }
 
 .editFormField {
-  width: 100%;
-  margin-left: -1px;
+  width: calc(100% - 2px);
+  margin-left: 1px;
 }
 
 .bottomSectionContainer {
@@ -105,5 +115,6 @@
 }
 
 .settingButton {
+  height: 40px;
   justify-content: space-between;
 }

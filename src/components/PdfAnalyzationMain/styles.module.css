@@ -1,16 +1,32 @@
 .container {
   min-height: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 20px;
+  padding: 5% 100px 0px;
   overflow: hidden;
-  padding: 5% 100px;
+  &.containerWithDocks {
+    padding-top: 0px;
+  }
+}
+
+.uploadSectionOverWrap {
+  height: 100%;
+  max-height: 70dvh;
+  padding: 10px 0;
+  background-color: var(--main-background-color);
+  display: flex;
+  flex: 1;
+  &.withDocs {
+    height: 150px;
+    flex: unset;
+  }
 }
 
 .uploadSectionContainer {
-  width: 100%;
-  min-height: 100%;
   flex: 1;
+  width: 100%;
   border: 2px dashed var(--gray-700);
   display: flex;
   align-items: center;
@@ -21,17 +37,18 @@
   overflow: hidden;
   transition: all 0.2s;
   transform: scale(1);
-}
 
-.uploadSectionContainerOvered {
-  box-shadow: 0px 0px 24px -3px rgba(var(--white), 0.5);
-  transform: scale(1.02);
-  background-color: var(--gray-300);
+  &.uploadSectionContainerOvered {
+    box-shadow: 0px 0px 24px -3px rgba(var(--white), 0.5);
+    transform: scale(1.02);
+    background-color: var(--gray-300);
+  }
 }
 
 .uploadSectionTitle {
   font-size: 22px;
   font-weight: 600;
+  text-align: center;
 }
 
 .uploadSectionTitleLabel {
@@ -43,18 +60,66 @@
   font-size: 14px;
 }
 
+.chanMessagesScrollContainer {
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  padding-right: 15px;
+  margin-right: -15px;
+}
+
+.chatMessagesContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+
+  .messageContainer {
+    width: 100%;
+    max-width: 700px;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .message {
+    align-self: flex-end;
+    display: flex;
+    width: fit-content;
+    padding: 10px 20px;
+    border-radius: 20px;
+    background-color: var(--white);
+    justify-content: flex-end;
+  }
+
+  .messageResponse {
+    align-self: flex-end;
+    display: flex;
+    width: fit-content;
+    padding: 10px 20px;
+    border-radius: 20px;
+    background-color: var(--gray-500);
+    color: var(--white);
+    justify-content: flex-start;
+  }
+}
+
 .inputContainer {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-
+  padding: 10px 0 40px 0;
+  height: 100px;
+  background-color: var(--main-background-color);
   .input {
     width: 100%;
-    max-width: 600px;
+    max-width: 700px;
     font-size: 18px;
   }
-}
 
-.sendButton {
-  margin-right: -5px;
+  .sendButton {
+    margin-right: -5px;
+  }
 }

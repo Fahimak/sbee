@@ -4,11 +4,6 @@ import { useRoomsContext } from "@app/hooks/roomContextHooks";
 
 const PreviousProjectsSection = () => {
   const rooms = useRoomsContext();
-
-  rooms.sort((a, b) => {
-    return a.date_modified > b.date_modified ? -1 : 1;
-  });
-
   return (
     <div className={styles.previousSectionContainer}>
       <p className={styles.previousSectionTitle}>Previous</p>

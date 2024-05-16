@@ -1,4 +1,10 @@
 .pageContainer {
   flex: 1;
-  padding: 20px;
+  /* padding: 0 20px; */
+}
+
+.rootPageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

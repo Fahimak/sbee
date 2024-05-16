@@ -33,13 +33,14 @@ const ClickAwayListener: React.FC<ClickAwayListenerProps> = ({
   }, [handleOnClickAway]);
 
   return (
-    <>
-      {Children.map(children, (child) => {
+    <span ref={childrenRef} style={{ display: "contents" }}>
+      {/* {Children.map(children, (child) => {
         return cloneElement(child, {
           ref: childrenRef,
         });
-      })}
-    </>
+      })} */}
+      {children}
+    </span>
   );
 };
 

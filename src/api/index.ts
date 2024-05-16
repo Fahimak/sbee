@@ -53,8 +53,7 @@ class ClientApi {
   }
 }
 
-const baseURL =
-  "https://veehiveprod.uaenorth.cloudapp.azure.com/pdf/summarizer/";
+const baseURL = "https://veehiveprod.uaenorth.cloudapp.azure.com/pdf/";
 
 const clientApi = new ClientApi(
   axios.create({
@@ -62,6 +61,6 @@ const clientApi = new ClientApi(
   })
 );
 
-export const TEST_USER_ID = "993366";
-
+// export const TEST_USER_ID = "993366"; "993367"; "993368"
+export const TEST_USER_ID = "993378";
 export default clientApi;

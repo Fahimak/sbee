@@ -1,4 +1,5 @@
-import React, { FC, useState, useCallback } from "react";
+"use client";
+import React, { FC, useState, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
 import classNames from "classnames";
 import Link from "next/link";
@@ -9,6 +10,7 @@ import ClickAwayListener from "@app/shared/UI/ClickAwayListener";
 import styles from "../styles.module.css";
 
 import EditForm from "./EditForm";
+import { useRoomActionsContext } from "@app/hooks/roomContextHooks";
 
 interface PreviousProjectItemProps {
   roomUUID: string;
@@ -24,6 +26,10 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
   const pathname = usePathname();
   const isActivePath = pathname.includes(roomId);
 
+  const { updateRoomName } = useRoomActionsContext();
+
+  const fromRef = useRef<HTMLFormElement>(null);
+
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
   const handleClickEdit = () => {
@@ -32,9 +38,16 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
     });
   };
 
-  const closeEditModeAndSaveChanges = useCallback(() => {
+  const closeEditModeAndSaveChanges = useCallback(async () => {
+    const value = (fromRef?.current?.roomName.value || "").trim();
+    if (value && value !== roomName) {
+      await updateRoomName.mutateAsync({
+        room_name: value,
+        roomUUID: roomUUID,
+      });
+    }
     setIsEdit(false);
-  }, []);
+  }, [roomName, roomUUID, updateRoomName]);
 
   const roomLinkClassNames = classNames(styles.previousSectionListItemButton, {
     [styles.activeLink]: isActivePath,
@@ -47,6 +60,7 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
           <EditForm
             projectName={roomName}
             onSubmit={closeEditModeAndSaveChanges}
+            ref={fromRef}
           />
         </ClickAwayListener>
       ) : (

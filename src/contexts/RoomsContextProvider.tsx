@@ -1,9 +1,15 @@
 import React, { createContext, useMemo } from "react";
-import { useRooms, useRoomsReturn } from "./useRooms";
+import { useRooms, useRoomsReturn } from "@app/hooks/useRooms";
 
 export const RoomContext = createContext<useRoomsReturn["rooms"]>([]);
 
-export type RoomActionContextValue = Pick<useRoomsReturn, "updateRoomName">;
+export type RoomActionContextValue = Pick<
+  useRoomsReturn,
+  | "updateRoomName"
+  | "createRoomMutation"
+  | "addRoomDocument"
+  | "addMessageInRoomMutation"
+>;
 export const RoomActionContext = createContext<RoomActionContextValue>(
   {} as RoomActionContextValue
 );
@@ -11,11 +17,27 @@ export const RoomActionContext = createContext<RoomActionContextValue>(
 const RoomsContextProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { rooms, updateRoomName } = useRooms();
+  const {
+    rooms,
+    updateRoomName,
+    createRoomMutation,
+    addRoomDocument,
+    addMessageInRoomMutation,
+  } = useRooms();
 
   const roomsActionContextValue = useMemo<RoomActionContextValue>(
-    () => ({ updateRoomName }),
-    [updateRoomName]
+    () => ({
+      updateRoomName,
+      createRoomMutation,
+      addRoomDocument,
+      addMessageInRoomMutation,
+    }),
+    [
+      updateRoomName,
+      createRoomMutation,
+      addRoomDocument,
+      addMessageInRoomMutation,
+    ]
   );
 
   return (
