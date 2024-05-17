@@ -3,23 +3,27 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 20px;
   padding: 5% 100px 0px;
   overflow: hidden;
+  width: 100%;
   &.containerWithDocks {
     padding-top: 0px;
+    max-width: 1150px;
   }
 }
 
 .uploadSectionOverWrap {
+  width: 100%;
   height: 100%;
   max-height: 70dvh;
-  padding: 10px 0;
   background-color: var(--main-background-color);
   display: flex;
   flex: 1;
+  justify-content: flex-start;
   &.withDocs {
-    height: 150px;
+    height: 160px;
     flex: unset;
   }
 }
@@ -33,7 +37,7 @@
   justify-content: center;
   flex-direction: column;
   border-radius: 8px;
-  padding: 0 20px;
+  padding: 10px 20px;
   overflow: hidden;
   transition: all 0.2s;
   transform: scale(1);
@@ -43,30 +47,77 @@
     transform: scale(1.02);
     background-color: var(--gray-300);
   }
+
+  &.uploadSectionContainerWithDoc {
+    overflow: auto;
+    position: relative;
+    justify-content: flex-start;
+    .uploadSectionTitleLabel {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      margin-top: 0;
+    }
+  }
+
+  .uploadSectionTitle {
+    font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .uploadSectionTitleLabel {
+    margin-top: 10px;
+    color: var(--brand-purple);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 14px;
+  }
 }
 
-.uploadSectionTitle {
-  font-size: 22px;
-  font-weight: 600;
-  text-align: center;
-}
+.uploadedFilesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  .uploadedFilesSectionTitle {
+    font-weight: 600;
+  }
+  .uploadedFilesList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
 
-.uploadSectionTitleLabel {
-  margin-top: 10px;
-  color: var(--brand-purple);
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-size: 14px;
+  .uploadedFilesListItem {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    border-bottom: 1px solid var(--gray-500);
+    padding-bottom: 15px;
+    &:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .uploadedFileItemTitle {
+      font-weight: 500;
+    }
+    .uploadedFilesListItemContentContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+  }
 }
 
 .chanMessagesScrollContainer {
-  overflow: auto;
-  flex: 1;
   display: flex;
   flex-direction: column-reverse;
-  padding-right: 15px;
-  margin-right: -15px;
+  width: calc(100% + 25px);
+  flex: 1;
+  overflow: auto;
+  padding-right: 25px;
+  margin-right: -25px;
 }
 
 .chatMessagesContainer {
@@ -79,7 +130,6 @@
 
   .messageContainer {
     width: 100%;
-    max-width: 700px;
     display: inline-flex;
     flex-direction: column;
     gap: 10px;
@@ -107,15 +157,13 @@
 }
 
 .inputContainer {
+  width: 100%;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 10px 0 40px 0;
-  height: 100px;
+  padding-bottom: 30px;
   background-color: var(--main-background-color);
   .input {
     width: 100%;
-    max-width: 700px;
+    /* max-width: 700px; */
     font-size: 18px;
   }
 

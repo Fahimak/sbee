@@ -1,11 +1,11 @@
-"use client";
 import React, { ChangeEvent, useRef, FC } from "react";
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import classNames from "classnames";
 
-import styles from "../styles.module.css";
+import type { Documents } from "rooms-model";
 import { useRoomActionsContext } from "@app/hooks/roomContextHooks";
+import styles from "../styles.module.css";
 
 type FilesCollection = File[];
 
@@ -15,7 +15,7 @@ interface DragCollectData {
 
 type Props = {
   roomUUID: string | undefined;
-  hasDocs: boolean;
+  documents: Documents;
 };
 
 const PDFType = "application/pdf";
@@ -28,7 +28,9 @@ const filterFilesToType = (
   return files.filter((file) => file.type === type);
 };
 
-const UploadSection: FC<Props> = ({ roomUUID, hasDocs }) => {
+const UploadSection: FC<Props> = ({ roomUUID, documents }) => {
+  const hasDocs = !!documents.length;
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { addRoomDocument } = useRoomActionsContext();
@@ -82,13 +84,13 @@ const UploadSection: FC<Props> = ({ roomUUID, hasDocs }) => {
     fileInputRef.current?.click();
   };
 
-  const classNamesContainer = classNames(styles.uploadSectionContainer, {
-    [styles.uploadSectionContainerOvered]: isOver,
-    // [styles.withDocs]: hasDocs,
-  });
-
   const classNamesSectionOverlap = classNames(styles.uploadSectionOverWrap, {
     [styles.withDocs]: hasDocs,
+  });
+
+  const classNamesContainer = classNames(styles.uploadSectionContainer, {
+    [styles.uploadSectionContainerOvered]: isOver,
+    [styles.uploadSectionContainerWithDoc]: hasDocs,
   });
 
   return (
@@ -97,9 +99,11 @@ const UploadSection: FC<Props> = ({ roomUUID, hasDocs }) => {
         className={classNamesContainer}
         ref={dropRef as unknown as React.Ref<HTMLDivElement>}
       >
-        <p className={styles.uploadSectionTitle}>
-          Drag and Drop PDF Files into this area to upload them
-        </p>
+        {!hasDocs && (
+          <p className={styles.uploadSectionTitle}>
+            Drag and Drop PDF Files into this area to upload them
+          </p>
+        )}
         <label>
           <button
             onClick={handleClickSelectFile}
@@ -113,9 +117,49 @@ const UploadSection: FC<Props> = ({ roomUUID, hasDocs }) => {
               onChange={handleChangeUploadFilesInput}
               ref={fileInputRef}
             />
-            Or click here to select PDF files from your file system
+            {hasDocs
+              ? "Click here to select more PDFs"
+              : "Or click here to select PDF files from your file system"}
           </button>
         </label>
+        {hasDocs && (
+          <div className={styles.uploadedFilesSection}>
+            <h4 className={styles.uploadedFilesSectionTitle}>
+              You have uploaded PDF(s):
+            </h4>
+            <ul className={styles.uploadedFilesList}>
+              {documents.map((doc, index) => {
+                return (
+                  <li key={index} className={styles.uploadedFilesListItem}>
+                    <p className={styles.uploadedFileItemTitle}>{index + 1}.</p>
+                    <span
+                      className={styles.uploadedFilesListItemContentContainer}
+                    >
+                      <p>
+                        <span className={styles.uploadedFileItemTitle}>
+                          Title:{" "}
+                        </span>
+                        {doc.title}
+                      </p>
+                      <p>
+                        <span className={styles.uploadedFileItemTitle}>
+                          Summary:{" "}
+                        </span>
+                        {doc.summary}
+                      </p>
+                      <p>
+                        <span className={styles.uploadedFileItemTitle}>
+                          Keywords:{" "}
+                        </span>
+                        {doc.keywords?.join(" | ")}
+                      </p>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

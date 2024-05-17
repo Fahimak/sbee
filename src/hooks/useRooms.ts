@@ -55,7 +55,7 @@ export const useRooms = (): useRoomsReturn => {
 
   const roomQuery = useQuery({ queryKey: ["rooms"], queryFn: getRooms });
 
-  const rooms = roomQuery.data || [];
+  const rooms = sortRooms(roomQuery.data || []);
 
   const createRoomMutation = useMutation({
     mutationFn: async () =>
@@ -90,7 +90,7 @@ export const useRooms = (): useRoomsReturn => {
   });
 
   return {
-    rooms: sortRooms(rooms),
+    rooms: rooms,
     updateRoomName: updateRoomNameMutation,
     createRoomMutation: createRoomMutation,
     addRoomDocument: addRoomDocument,

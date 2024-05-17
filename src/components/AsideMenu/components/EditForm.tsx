@@ -18,7 +18,12 @@ const EditForm = forwardRef<HTMLFormElement, EditFormProps>((props, ref) => {
 
   return (
     <form className={styles.editFormField} onSubmit={handleSubmit} ref={ref}>
-      <TextField defaultValue={projectName} inputSize="small" name="roomName" />
+      <TextField
+        defaultValue={projectName}
+        inputSize="small"
+        name="roomName"
+        autoFocus
+      />
     </form>
   );
 });

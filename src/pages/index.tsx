@@ -30,7 +30,7 @@ export default function RootPage(
     if (serverRooms.length) {
       const firstRoom = serverRooms.at(0);
       router.replace(`/${firstRoom?._id}`);
-    } else if (!serverRooms.length) {
+    } else {
       createRoomMutation.mutateAsync().then((res) => {
         if (res?.room_id) {
           router.replace(`/${res?.room_id}`);

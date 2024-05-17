@@ -28,7 +28,7 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
 
   const { updateRoomName } = useRoomActionsContext();
 
-  const fromRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
@@ -39,7 +39,7 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
   };
 
   const closeEditModeAndSaveChanges = useCallback(async () => {
-    const value = (fromRef?.current?.roomName.value || "").trim();
+    const value = (formRef?.current?.roomName.value || "").trim();
     if (value && value !== roomName) {
       await updateRoomName.mutateAsync({
         room_name: value,
@@ -60,7 +60,7 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
           <EditForm
             projectName={roomName}
             onSubmit={closeEditModeAndSaveChanges}
-            ref={fromRef}
+            ref={formRef}
           />
         </ClickAwayListener>
       ) : (

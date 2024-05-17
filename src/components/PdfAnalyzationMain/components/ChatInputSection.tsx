@@ -44,6 +44,7 @@ const ChatInputSection: React.FC<Props> = ({ roomUUID }) => {
         inputSize="large"
         onChange={handleChangeMessage}
         value={message}
+        maxLength={510}
         endIcon={
           <IconButton className={styles.sendButton} type="submit">
             <SendIcon />

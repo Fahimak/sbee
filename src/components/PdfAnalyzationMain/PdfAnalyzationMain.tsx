@@ -23,17 +23,10 @@ const PdfAnalyzationMain: React.FC<Props> = ({ room }) => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className={classNamesContainer}>
-        <UploadSection roomUUID={room?.room_uuid} hasDocs={hasDocs} />
-        {/* {!!room?.documents?.length &&
-          room.documents.map((doc) => {
-            return (
-              <section key={crypto.randomUUID()}>
-                <p>{doc.title}</p>
-                <p>{doc.summary}</p>
-                <hr />
-              </section>
-            );
-          })} */}
+        <UploadSection
+          roomUUID={room?.room_uuid}
+          documents={room?.documents || []}
+        />
         {hasDocs && (
           <>
             <ChatMessages roomUUID={room?.room_uuid} />
