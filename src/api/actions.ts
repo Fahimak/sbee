@@ -1,13 +1,12 @@
-import clientApi, { TEST_USER_ID } from "@app/api";
-import {
+import clientApi from "@app/api";
+import type {
   AddMessageInChatRoomRequestData,
-  CreateRoomRequestData,
   UpdateRoomRequestData,
 } from "rooms-model";
 
 export const getRooms = async () => {
   try {
-    const { data } = await clientApi.room.getRooms(TEST_USER_ID);
+    const { data } = await clientApi.room.getRooms(clientApi.userId);
     if (data.statusCode === 200 || data.statusCode === 201) {
       return data.data.chat_rooms;
     }
@@ -17,9 +16,12 @@ export const getRooms = async () => {
   }
 };
 
-export const createRoom = async (body: CreateRoomRequestData) => {
+export const createRoom = async () => {
   try {
-    const { data } = await clientApi.room.createRoom(body);
+    const { data } = await clientApi.room.createRoom({
+      room_name: `Room ${new Date().getTime().toString(16)}`,
+      user_id: clientApi.userId,
+    });
     if (data.statusCode === 200 || data.statusCode === 201) {
       return data.data;
     }
@@ -87,10 +89,13 @@ export const getRoomMessages = async (roomUUID: string) => {
 };
 
 export const addMessagesInChatRoom = async (
-  body: AddMessageInChatRoomRequestData
+  body: Pick<AddMessageInChatRoomRequestData, "message_content" | "room_uuid">
 ) => {
   try {
-    const { data } = await clientApi.room.addMessageInChatRoom(body);
+    const { data } = await clientApi.room.addMessageInChatRoom({
+      ...body,
+      sender_id: clientApi.userId,
+    });
     if (data.statusCode === 200 || data.statusCode === 201) {
       return data.data.message_id;
     }

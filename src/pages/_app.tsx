@@ -8,6 +8,7 @@ import RootPageLayout from "@app/components/RootPageLayout";
 const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
+  // console.log("pageProps", pageProps, rest);
   return (
     <QueryClientProvider client={queryClient}>
       <RoomsContextProvider>

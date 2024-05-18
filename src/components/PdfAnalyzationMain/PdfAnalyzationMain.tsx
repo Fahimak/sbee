@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 
@@ -38,4 +39,4 @@ const PdfAnalyzationMain: React.FC<Props> = ({ room }) => {
   );
 };
 
-export default PdfAnalyzationMain;
+export default memo(PdfAnalyzationMain);

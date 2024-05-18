@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -7,13 +7,15 @@ import styles from "../styles.module.css";
 import { useRoomsContext } from "@app/hooks/roomContextHooks";
 import { ChatRoom } from "rooms-model";
 
-const PdfAnalyzation = () => {
+const RoomPage = () => {
   const router = useRouter();
   const { roomId } = router.query as { roomId: string };
   const rooms = useRoomsContext();
 
-  const currentRoom =
-    rooms.find((room) => room._id === roomId) || ({} as ChatRoom);
+  const currentRoom = useMemo(
+    () => rooms.find((room) => room._id === roomId) || ({} as ChatRoom),
+    [roomId, rooms]
+  );
 
   return (
     <>
@@ -30,4 +32,4 @@ const PdfAnalyzation = () => {
   );
 };
 
-export default PdfAnalyzation;
+export default RoomPage;

@@ -4,15 +4,23 @@ import TextField from "@app/shared/UI/TextField";
 import IconButton from "@app/shared/UI/IconButton";
 import SendIcon from "@app/shared/SvgIcons/SendIcon";
 import styles from "../styles.module.css";
-import { useRoomActionsContext } from "@app/hooks/roomContextHooks";
-import { TEST_USER_ID } from "@app/api";
+import { useMutation } from "@tanstack/react-query";
+import { addMessagesInChatRoom } from "@app/api/actions";
+import { useQueryClientContext } from "@app/hooks/roomContextHooks";
 
 interface Props {
   roomUUID: string;
 }
 
 const ChatInputSection: React.FC<Props> = ({ roomUUID }) => {
-  const { addMessageInRoomMutation } = useRoomActionsContext();
+  const queryClient = useQueryClientContext();
+
+  const addMessageInRoomMutation = useMutation({
+    mutationFn: addMessagesInChatRoom,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+    },
+  });
 
   const [message, setMessage] = useState<string>("");
 
@@ -31,7 +39,6 @@ const ChatInputSection: React.FC<Props> = ({ roomUUID }) => {
     await addMessageInRoomMutation.mutateAsync({
       room_uuid: roomUUID,
       message_content: message.trim(),
-      sender_id: TEST_USER_ID,
     });
     setMessage("");
   };
@@ -50,6 +57,7 @@ const ChatInputSection: React.FC<Props> = ({ roomUUID }) => {
             <SendIcon />
           </IconButton>
         }
+        disabled={addMessageInRoomMutation.isPending}
       />
     </form>
   );

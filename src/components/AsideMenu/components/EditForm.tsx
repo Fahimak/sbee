@@ -1,33 +1,65 @@
-import { forwardRef } from "react";
+import { useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
 
+import ClickAwayListener from "@app/shared/UI/ClickAwayListener";
 import TextField from "@app/shared/UI/TextField";
+import { useQueryClientContext } from "@app/hooks/roomContextHooks";
+import { updateRoomName } from "@app/api/actions";
+
 import styles from "../styles.module.css";
+import { useCallback } from "react";
 
 interface EditFormProps {
-  projectName: string;
+  roomName: string;
+  roomUUID: string;
   onSubmit: () => void;
 }
 
-const EditForm = forwardRef<HTMLFormElement, EditFormProps>((props, ref) => {
-  const { projectName, onSubmit } = props;
+const EditForm: React.FC<EditFormProps> = (props) => {
+  const { roomName, onSubmit, roomUUID } = props;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClientContext();
+
+  const updateRoomNameMutation = useMutation({
+    mutationFn: updateRoomName,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+    },
+  });
+
+  const _updateRoomName = updateRoomNameMutation.mutateAsync;
+  const isPending = updateRoomNameMutation.isPending;
+
+  const updateRoom = useCallback(async () => {
+    const value = (inputRef?.current?.value || "").trim();
+    if (value && value !== roomName) {
+      await _updateRoomName({
+        room_name: value,
+        roomUUID: roomUUID,
+      });
+      onSubmit();
+    }
+  }, [_updateRoomName, roomName, roomUUID, onSubmit]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit();
+    updateRoom();
   };
 
   return (
-    <form className={styles.editFormField} onSubmit={handleSubmit} ref={ref}>
-      <TextField
-        defaultValue={projectName}
-        inputSize="small"
-        name="roomName"
-        autoFocus
-      />
-    </form>
+    <ClickAwayListener onClickAway={onSubmit}>
+      <form className={styles.editFormField} onSubmit={handleSubmit}>
+        <TextField
+          defaultValue={roomName}
+          inputSize="small"
+          name="roomName"
+          autoFocus
+          disabled={isPending}
+          ref={inputRef}
+        />
+      </form>
+    </ClickAwayListener>
   );
-});
-
-EditForm.displayName = "EditForm";
+};
 
 export default EditForm;

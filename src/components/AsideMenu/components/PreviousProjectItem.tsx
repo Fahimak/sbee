@@ -1,16 +1,14 @@
-"use client";
-import React, { FC, useState, useCallback, useRef } from "react";
+import React, { FC, useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import classNames from "classnames";
 import Link from "next/link";
 
 import IconButton from "@app/shared/UI/IconButton";
 import PenIcon from "@app/shared/SvgIcons/PenIcon";
-import ClickAwayListener from "@app/shared/UI/ClickAwayListener";
+
 import styles from "../styles.module.css";
 
 import EditForm from "./EditForm";
-import { useRoomActionsContext } from "@app/hooks/roomContextHooks";
 
 interface PreviousProjectItemProps {
   roomUUID: string;
@@ -26,10 +24,6 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
   const pathname = usePathname();
   const isActivePath = pathname.includes(roomId);
 
-  const { updateRoomName } = useRoomActionsContext();
-
-  const formRef = useRef<HTMLFormElement>(null);
-
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
   const handleClickEdit = () => {
@@ -39,15 +33,8 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
   };
 
   const closeEditModeAndSaveChanges = useCallback(async () => {
-    const value = (formRef?.current?.roomName.value || "").trim();
-    if (value && value !== roomName) {
-      await updateRoomName.mutateAsync({
-        room_name: value,
-        roomUUID: roomUUID,
-      });
-    }
     setIsEdit(false);
-  }, [roomName, roomUUID, updateRoomName]);
+  }, []);
 
   const roomLinkClassNames = classNames(styles.previousSectionListItemButton, {
     [styles.activeLink]: isActivePath,
@@ -56,13 +43,11 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
   return (
     <li className={styles.previousSectionListItem}>
       {isEdit ? (
-        <ClickAwayListener onClickAway={closeEditModeAndSaveChanges}>
-          <EditForm
-            projectName={roomName}
-            onSubmit={closeEditModeAndSaveChanges}
-            ref={formRef}
-          />
-        </ClickAwayListener>
+        <EditForm
+          roomName={roomName}
+          onSubmit={closeEditModeAndSaveChanges}
+          roomUUID={roomUUID}
+        />
       ) : (
         <>
           <Link className={roomLinkClassNames} href={`/${roomId}`}>

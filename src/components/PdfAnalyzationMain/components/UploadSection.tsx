@@ -4,8 +4,10 @@ import { NativeTypes } from "react-dnd-html5-backend";
 import classNames from "classnames";
 
 import type { Documents } from "rooms-model";
-import { useRoomActionsContext } from "@app/hooks/roomContextHooks";
+import { useQueryClientContext } from "@app/hooks/roomContextHooks";
 import styles from "../styles.module.css";
+import { useMutation } from "@tanstack/react-query";
+import { addDocumentByRoomUUID } from "@app/api/actions";
 
 type FilesCollection = File[];
 
@@ -29,11 +31,19 @@ const filterFilesToType = (
 };
 
 const UploadSection: FC<Props> = ({ roomUUID, documents }) => {
+  const queryClient = useQueryClientContext();
+
   const hasDocs = !!documents.length;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { addRoomDocument } = useRoomActionsContext();
+  const addRoomDocumentMutation = useMutation({
+    mutationFn: addDocumentByRoomUUID,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+    },
+  });
+  const addRoomDocument = addRoomDocumentMutation.mutateAsync;
 
   const addFiles = async (files: FilesCollection) => {
     const filteredFiles = filterFilesToType(files, PDFType);
@@ -45,7 +55,7 @@ const UploadSection: FC<Props> = ({ roomUUID, documents }) => {
     });
 
     if (roomUUID) {
-      addRoomDocument.mutate({ roomUUID, body: formData });
+      addRoomDocument({ roomUUID, body: formData });
     }
   };
 
@@ -80,7 +90,7 @@ const UploadSection: FC<Props> = ({ roomUUID, documents }) => {
     event.currentTarget.value = "";
   };
 
-  const handleClickSelectFile = (e: React.MouseEvent) => {
+  const handleClickSelectFile = () => {
     fileInputRef.current?.click();
   };
 

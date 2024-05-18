@@ -1,99 +1,60 @@
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 import {
   useQuery,
   useMutation,
   useQueryClient,
-  UseMutationResult,
+  QueryClient,
 } from "@tanstack/react-query";
 
-import type {
-  AddMessageInChatRoomRequestData,
-  ChatRooms,
-  CreateRoomResponse,
-} from "rooms-model";
-import {
-  getRooms,
-  updateRoomName,
-  createRoom,
-  UpdateRoomNameParams,
-  addDocumentByRoomUUID,
-  AddDocumentByRoomUUID,
-  addMessagesInChatRoom,
-} from "@app/api/actions";
-import { TEST_USER_ID } from "@app/api";
+import type { ChatRooms } from "rooms-model";
+import { getRooms, createRoom } from "@app/api/actions";
 import { sortRooms } from "@app/utils";
 
 export interface useRoomsReturn {
+  queryClient: QueryClient;
   rooms: ChatRooms;
-  updateRoomName: UseMutationResult<
-    boolean | undefined,
-    Error,
-    UpdateRoomNameParams,
-    unknown
-  >;
-  createRoomMutation: UseMutationResult<
-    CreateRoomResponse | undefined,
-    Error,
-    void,
-    unknown
-  >;
-  addRoomDocument: UseMutationResult<
-    boolean | undefined,
-    Error,
-    AddDocumentByRoomUUID,
-    unknown
-  >;
-  addMessageInRoomMutation: UseMutationResult<
-    string | undefined,
-    Error,
-    AddMessageInChatRoomRequestData,
-    unknown
-  >;
 }
 
 export const useRooms = (): useRoomsReturn => {
+  const router = useRouter();
   const queryClient = useQueryClient();
 
-  const roomQuery = useQuery({ queryKey: ["rooms"], queryFn: getRooms });
+  const roomQuery = useQuery({
+    queryKey: ["rooms"],
+    queryFn: getRooms,
+  });
+
+  const isFetchedRooms = roomQuery.isFetched;
 
   const rooms = sortRooms(roomQuery.data || []);
 
   const createRoomMutation = useMutation({
-    mutationFn: async () =>
-      await createRoom({
-        room_name: `Room ${new Date().getTime().toString(16)}`,
-        user_id: TEST_USER_ID,
-      }),
+    mutationFn: createRoom,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
     },
   });
 
-  const updateRoomNameMutation = useMutation({
-    mutationFn: updateRoomName,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rooms"] });
-    },
-  });
+  useEffect(() => {
+    if (isFetchedRooms) {
+      if (rooms.length) {
+        const firstRoom = rooms.at(0);
+        router.replace(`/${firstRoom?._id}`);
+      } else {
+        createRoomMutation.mutateAsync().then((res) => {
+          if (res?.room_id) {
+            router.replace(`/${res?.room_id}`);
+          }
+        });
+      }
+    }
 
-  const addRoomDocument = useMutation({
-    mutationFn: addDocumentByRoomUUID,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rooms"] });
-    },
-  });
-
-  const addMessageInRoom = useMutation({
-    mutationFn: addMessagesInChatRoom,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
-    },
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFetchedRooms]);
 
   return {
-    rooms: rooms,
-    updateRoomName: updateRoomNameMutation,
-    createRoomMutation: createRoomMutation,
-    addRoomDocument: addRoomDocument,
-    addMessageInRoomMutation: addMessageInRoom,
+    rooms,
+    queryClient,
   };
 };

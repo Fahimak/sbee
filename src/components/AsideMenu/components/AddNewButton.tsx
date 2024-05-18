@@ -1,13 +1,22 @@
+import { useRouter } from "next/router";
+import { useMutation } from "@tanstack/react-query";
+
 import Button from "@app/shared/UI/Button";
 import NewIcon from "@app/shared/SvgIcons/NewIcon";
 import styles from "@app/components/AsideMenu/styles.module.css";
-import { useRoomActionsContext } from "@app/hooks/roomContextHooks";
-import { useRouter } from "next/router";
+import { useQueryClientContext } from "@app/hooks/roomContextHooks";
+import { createRoom } from "@app/api/actions";
 
 const AddNewButton = () => {
   const router = useRouter();
+  const queryClient = useQueryClientContext();
 
-  const { createRoomMutation } = useRoomActionsContext();
+  const createRoomMutation = useMutation({
+    mutationFn: createRoom,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+    },
+  });
 
   const handleClickCreate = () => {
     createRoomMutation.mutateAsync().then((res) => {

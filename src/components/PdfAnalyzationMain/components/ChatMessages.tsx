@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getRoomMessages } from "@app/api/actions";
 
 import styles from "../styles.module.css";
-import { TEST_USER_ID } from "@app/api";
+import clientApi from "@app/api";
 import classNames from "classnames";
 
 interface Props {
@@ -37,7 +37,7 @@ const ChatMessages: React.FC<Props> = ({ roomUUID }) => {
               <MessageItem
                 key={message.message_id}
                 messageContent={message.message_content}
-                isOwner={message.sender_id === TEST_USER_ID}
+                isOwner={message.sender_id === clientApi.userId}
                 dateCreate={new Date(message.timestamp).toLocaleString()}
                 messageResponse={message.message_response}
               />
