@@ -171,3 +171,7 @@
     margin-right: -5px;
   }
 }
+
+.uploadModal {
+  width: 420px;
+}

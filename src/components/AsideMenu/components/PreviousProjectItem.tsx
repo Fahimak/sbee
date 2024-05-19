@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback } from "react";
+import React, { FC, useState } from "react";
 import { usePathname } from "next/navigation";
 import classNames from "classnames";
 import Link from "next/link";
@@ -25,16 +25,13 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
   const isActivePath = pathname.includes(roomId);
 
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [newRoomName, setNewRoomName] = useState<string>(roomName);
 
   const handleClickEdit = () => {
     requestAnimationFrame(() => {
       setIsEdit(true);
     });
   };
-
-  const closeEditModeAndSaveChanges = useCallback(async () => {
-    setIsEdit(false);
-  }, []);
 
   const roomLinkClassNames = classNames(styles.previousSectionListItemButton, {
     [styles.activeLink]: isActivePath,
@@ -44,14 +41,16 @@ const PreviousProjectItem: FC<PreviousProjectItemProps> = ({
     <li className={styles.previousSectionListItem}>
       {isEdit ? (
         <EditForm
-          roomName={roomName}
-          onSubmit={closeEditModeAndSaveChanges}
+          roomName={newRoomName}
+          currentRoomName={roomName}
+          onSubmit={setIsEdit.bind(null, false)}
           roomUUID={roomUUID}
+          onChangeRoomName={setNewRoomName}
         />
       ) : (
         <>
           <Link className={roomLinkClassNames} href={`/${roomId}`}>
-            {roomName}
+            {newRoomName}
           </Link>
           <IconButton onClick={handleClickEdit} className={styles.editButton}>
             <PenIcon />

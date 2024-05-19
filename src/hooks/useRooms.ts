@@ -18,6 +18,7 @@ export interface useRoomsReturn {
 
 export const useRooms = (): useRoomsReturn => {
   const router = useRouter();
+  const { roomId } = router.query as { roomId: string };
   const queryClient = useQueryClient();
 
   const roomQuery = useQuery({
@@ -39,8 +40,8 @@ export const useRooms = (): useRoomsReturn => {
   useEffect(() => {
     if (isFetchedRooms) {
       if (rooms.length) {
-        const firstRoom = rooms.at(0);
-        router.replace(`/${firstRoom?._id}`);
+        const initRoomId = roomId || rooms.at(0)?._id;
+        router.replace(`/${initRoomId}`);
       } else {
         createRoomMutation.mutateAsync().then((res) => {
           if (res?.room_id) {

@@ -1,13 +1,15 @@
-import React, { ChangeEvent, useRef, FC } from "react";
+import React, { ChangeEvent, useRef, FC, useState } from "react";
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import classNames from "classnames";
+import { useMutation } from "@tanstack/react-query";
 
 import type { Documents } from "rooms-model";
 import { useQueryClientContext } from "@app/hooks/roomContextHooks";
-import styles from "../styles.module.css";
-import { useMutation } from "@tanstack/react-query";
 import { addDocumentByRoomUUID } from "@app/api/actions";
+import UploadProgressModal from "./UploadProgressModal";
+import styles from "../styles.module.css";
+import { useUploadFileProgress } from "@app/hooks/useUploadFile";
 
 type FilesCollection = File[];
 
@@ -32,6 +34,12 @@ const filterFilesToType = (
 
 const UploadSection: FC<Props> = ({ roomUUID, documents }) => {
   const queryClient = useQueryClientContext();
+  const { handleProgress, progress } = useUploadFileProgress();
+  const [showUploadProgressModal, setShowProgressModal] =
+    useState<boolean>(false);
+  const [signalController, setSignalController] = useState<
+    AbortController | undefined
+  >(undefined);
 
   const hasDocs = !!documents.length;
 
@@ -46,17 +54,38 @@ const UploadSection: FC<Props> = ({ roomUUID, documents }) => {
   const addRoomDocument = addRoomDocumentMutation.mutateAsync;
 
   const addFiles = async (files: FilesCollection) => {
-    const filteredFiles = filterFilesToType(files, PDFType);
-
     const formData = new FormData();
+    const controller = new AbortController();
+    setSignalController(controller);
+    setShowProgressModal(true);
 
-    filteredFiles.forEach((file) => {
-      formData.append("file", file);
-    });
+    try {
+      const filteredFiles = filterFilesToType(files, PDFType);
 
-    if (roomUUID) {
-      addRoomDocument({ roomUUID, body: formData });
+      filteredFiles.forEach((file) => {
+        formData.append("file", file);
+      });
+
+      if (roomUUID) {
+        await addRoomDocument({
+          roomUUID,
+          body: formData,
+          onUploadProgress: handleProgress,
+          cancelSignal: controller.signal,
+        });
+      }
+    } catch (error) {
+      // TODO:
+    } finally {
+      setShowProgressModal(false);
     }
+  };
+
+  const handleCancelUploading = () => {
+    if (signalController) {
+      signalController.abort();
+    }
+    setShowProgressModal(false);
   };
 
   const [{ isOver }, dropRef] = useDrop<
@@ -105,6 +134,12 @@ const UploadSection: FC<Props> = ({ roomUUID, documents }) => {
 
   return (
     <div className={classNamesSectionOverlap}>
+      {showUploadProgressModal && (
+        <UploadProgressModal
+          progress={progress}
+          onCancel={handleCancelUploading}
+        />
+      )}
       <div
         className={classNamesContainer}
         ref={dropRef as unknown as React.Ref<HTMLDivElement>}

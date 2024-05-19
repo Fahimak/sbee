@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosPromise } from "axios";
+import type { AxiosInstance, AxiosProgressEvent, AxiosPromise } from "axios";
 import Base from "./base";
 import {
   AddMessageInChatRoomRequestData,
@@ -40,12 +40,16 @@ export class RoomApi extends Base {
 
   addDocument(
     roomUUID: string,
-    data: FormData
+    data: FormData,
+    onUploadProgress?: (e: AxiosProgressEvent) => void,
+    cancelSignal?: AbortSignal
   ): AxiosPromise<CommonResponseApi<boolean>> {
     return this.httpClient({
       url: `${this.url}/chat_room/add_document/${roomUUID}`,
       method: "POST",
       data,
+      onUploadProgress,
+      signal: cancelSignal,
     });
   }
 

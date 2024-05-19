@@ -1,4 +1,5 @@
 import clientApi from "@app/api";
+import { AxiosProgressEvent } from "axios";
 import type {
   AddMessageInChatRoomRequestData,
   UpdateRoomRequestData,
@@ -53,14 +54,23 @@ export const updateRoomName = async ({
 export interface AddDocumentByRoomUUID {
   roomUUID: string;
   body: FormData;
+  onUploadProgress?: (e: AxiosProgressEvent) => void;
+  cancelSignal?: AbortSignal;
 }
 
 export const addDocumentByRoomUUID = async ({
   roomUUID,
   body,
+  onUploadProgress,
+  cancelSignal,
 }: AddDocumentByRoomUUID) => {
   try {
-    const { data } = await clientApi.room.addDocument(roomUUID, body);
+    const { data } = await clientApi.room.addDocument(
+      roomUUID,
+      body,
+      onUploadProgress,
+      cancelSignal
+    );
     if (data.statusCode === 200 || data.statusCode === 201) {
       return data.data;
     }
