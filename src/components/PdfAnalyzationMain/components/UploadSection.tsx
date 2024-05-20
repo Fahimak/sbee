@@ -7,9 +7,10 @@ import { useMutation } from "@tanstack/react-query";
 import type { Documents } from "rooms-model";
 import { useQueryClientContext } from "@app/hooks/roomContextHooks";
 import { addDocumentByRoomUUID } from "@app/api/actions";
-import UploadProgressModal from "./UploadProgressModal";
-import styles from "../styles.module.css";
 import { useUploadFileProgress } from "@app/hooks/useUploadFile";
+import UploadProgressModal from "./UploadProgressModal";
+import UploadedFiles from "./UploadedFiles";
+import styles from "../styles.module.css";
 
 type FilesCollection = File[];
 
@@ -167,44 +168,7 @@ const UploadSection: FC<Props> = ({ roomUUID, documents }) => {
               : "Or click here to select PDF files from your file system"}
           </button>
         </label>
-        {hasDocs && (
-          <div className={styles.uploadedFilesSection}>
-            <h4 className={styles.uploadedFilesSectionTitle}>
-              You have uploaded PDF(s):
-            </h4>
-            <ul className={styles.uploadedFilesList}>
-              {documents.map((doc, index) => {
-                return (
-                  <li key={index} className={styles.uploadedFilesListItem}>
-                    <p className={styles.uploadedFileItemTitle}>{index + 1}.</p>
-                    <span
-                      className={styles.uploadedFilesListItemContentContainer}
-                    >
-                      <p>
-                        <span className={styles.uploadedFileItemTitle}>
-                          Title:{" "}
-                        </span>
-                        {doc.title}
-                      </p>
-                      <p>
-                        <span className={styles.uploadedFileItemTitle}>
-                          Summary:{" "}
-                        </span>
-                        {doc.summary}
-                      </p>
-                      <p>
-                        <span className={styles.uploadedFileItemTitle}>
-                          Keywords:{" "}
-                        </span>
-                        {doc.keywords?.join(" | ")}
-                      </p>
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
+        {hasDocs && <UploadedFiles documents={documents} />}
       </div>
     </div>
   );
