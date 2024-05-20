@@ -24,7 +24,8 @@
   justify-content: flex-start;
   overflow: hidden;
   &.withDocs {
-    height: 260px;
+    max-height: 300px;
+    height: auto;
     flex: unset;
   }
 }
